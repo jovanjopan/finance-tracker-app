@@ -43,3 +43,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Local database (Drift/SQLite)
+*.sqlite
+*.sqlite3
+*.db
+
+# Environment/secrets (kalau nanti ada API key untuk cloud sync)
+.env
+.env.*
+.flutter-plugins
