@@ -7,7 +7,7 @@ import 'package:myfinancetracker/features/accounts/domain/account_repository.dar
 import 'package:myfinancetracker/main.dart';
 
 void main() {
-  testWidgets('Splash navigates to placeholder home screen', (WidgetTester tester) async {
+  testWidgets('Splash navigates to onboarding when no accounts exist', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -22,11 +22,42 @@ void main() {
     await tester.pump(const Duration(milliseconds: 1600));
     await tester.pumpAndSettle();
 
+    expect(find.text('buat akun pertama'), findsOneWidget);
+  });
+
+  testWidgets('Splash navigates directly to placeholder home when an account exists', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          accountRepositoryProvider.overrideWithValue(
+            const _FakeAccountRepository([
+              AccountEntity(
+                id: 'acc-1',
+                name: 'Cash',
+                type: 'cash',
+                initialBalance: 0.0,
+                isActive: true,
+              ),
+            ]),
+          ),
+        ],
+        child: const MyApp(),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 1600));
+    await tester.pumpAndSettle();
+
     expect(find.text('Onboarding & Dashboard belum dibuat'), findsOneWidget);
+    expect(find.text('buat akun pertama'), findsNothing);
   });
 }
 
 class _FakeAccountRepository implements AccountRepository {
+  const _FakeAccountRepository([this._accounts = const <AccountEntity>[]]);
+
+  final List<AccountEntity> _accounts;
+
   @override
   Future<void> createAccount(AccountEntity account) async {}
 
@@ -41,7 +72,7 @@ class _FakeAccountRepository implements AccountRepository {
 
   @override
   Stream<List<AccountEntity>> watchAllAccounts() {
-    return Stream<List<AccountEntity>>.value(const <AccountEntity>[]);
+    return Stream<List<AccountEntity>>.value(_accounts);
   }
 
   @override
