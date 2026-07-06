@@ -28,10 +28,9 @@ class TransferMoneyUseCase {
   static const Uuid _uuid = Uuid();
 
   TransferMoneyUseCase({
-    required AccountRepository accountRepository,
-    required TransactionRepository transactionRepository,
-  })  : _accountRepository = accountRepository,
-        _transactionRepository = transactionRepository;
+    required this._accountRepository,
+    required this._transactionRepository,
+  });
 
   final AccountRepository _accountRepository;
   final TransactionRepository _transactionRepository;
