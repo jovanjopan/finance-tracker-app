@@ -46,10 +46,28 @@ class BudgetRepositoryDrift implements BudgetRepository {
     return (_database.delete(_database.budgets)..where((table) => table.id.equals(id))).go();
   }
 
+  @override
+  Future<BudgetEntity?> getClassificationBudgetForDate(
+    String classification,
+    DateTime date,
+  ) async {
+    final row = await (_database.select(_database.budgets)
+          ..where(
+            (table) =>
+                table.classification.equals(classification) &
+                table.startDate.isSmallerOrEqualValue(date) &
+                table.endDate.isBiggerOrEqualValue(date),
+          ))
+        .getSingleOrNull();
+
+    return row == null ? null : _toEntity(row);
+  }
+
   BudgetEntity _toEntity(Budget row) {
     return BudgetEntity(
       id: row.id,
       categoryId: row.categoryId,
+      classification: row.classification,
       targetAmount: row.targetAmount,
       startDate: row.startDate,
       endDate: row.endDate,
@@ -59,7 +77,12 @@ class BudgetRepositoryDrift implements BudgetRepository {
   BudgetsCompanion _toCompanion(BudgetEntity budget) {
     return BudgetsCompanion(
       id: Value(budget.id),
-      categoryId: Value(budget.categoryId),
+      categoryId: budget.categoryId == null
+          ? const Value.absent()
+          : Value<String?>(budget.categoryId),
+      classification: budget.classification == null
+          ? const Value.absent()
+          : Value<String?>(budget.classification),
       targetAmount: Value(budget.targetAmount),
       startDate: Value(budget.startDate),
       endDate: Value(budget.endDate),

@@ -8,7 +8,9 @@ class Budgets extends Table {
 
   TextColumn get id => text()();
 
-  TextColumn get categoryId => text().references(Categories, #id)();
+  TextColumn get categoryId => text().nullable()();
+
+  TextColumn get classification => text().nullable()();
 
   RealColumn get targetAmount => real()();
 

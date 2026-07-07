@@ -10,4 +10,12 @@ abstract class BudgetRepository {
   Future<void> updateBudget(BudgetEntity budget);
 
   Future<void> deleteBudget(String id);
+
+  /// Mencari BUDGET dengan classification tertentu yang periodenya
+  /// (startDate–endDate) mencakup [date]. Dipakai oleh
+  /// AllocateIncomeUseCase untuk logic "cari atau buat, lalu tambahkan".
+  Future<BudgetEntity?> getClassificationBudgetForDate(
+    String classification,
+    DateTime date,
+  );
 }

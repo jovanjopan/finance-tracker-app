@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../database/app_database.dart';
 import '../../features/accounts/data/account_repository_drift.dart';
 import '../../features/accounts/domain/account_repository.dart';
+import '../../features/budgets/data/budget_repository_drift.dart';
+import '../../features/budgets/domain/allocate_income_use_case.dart';
+import '../../features/budgets/domain/budget_repository.dart';
 import '../../features/categories/data/category_repository_drift.dart';
 import '../../features/categories/domain/category_repository.dart';
 import '../../features/transactions/data/transaction_repository_drift.dart';
@@ -30,9 +33,20 @@ final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
   return CategoryRepositoryDrift(database);
 });
 
+final budgetRepositoryProvider = Provider<BudgetRepository>((ref) {
+  final database = ref.watch(appDatabaseProvider);
+  return BudgetRepositoryDrift(database);
+});
+
 final transferMoneyUseCaseProvider = Provider<TransferMoneyUseCase>((ref) {
   return TransferMoneyUseCase(
     accountRepository: ref.watch(accountRepositoryProvider),
     transactionRepository: ref.watch(transactionRepositoryProvider),
+  );
+});
+
+final allocateIncomeUseCaseProvider = Provider<AllocateIncomeUseCase>((ref) {
+  return AllocateIncomeUseCase(
+    budgetRepository: ref.watch(budgetRepositoryProvider),
   );
 });

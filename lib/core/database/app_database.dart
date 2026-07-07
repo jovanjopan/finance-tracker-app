@@ -19,16 +19,25 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
     },
-    onUpgrade: (Migrator m, int from, int to) async {
+onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.addColumn(transactions, transactions.note);
+        }
+        if (from < 3) {
+          await customStatement('ALTER TABLE budgets RENAME TO budgets_old');
+          await m.createTable(budgets);
+          await customStatement(
+            'INSERT INTO budgets (id, category_id, classification, target_amount, start_date, end_date) '
+            'SELECT id, category_id, NULL, target_amount, start_date, end_date FROM budgets_old',
+          );
+          await customStatement('DROP TABLE budgets_old');
         }
       },
   );

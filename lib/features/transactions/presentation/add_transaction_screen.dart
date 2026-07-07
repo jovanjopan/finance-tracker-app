@@ -11,6 +11,7 @@ import '../../accounts/presentation/account_providers.dart';
 import '../../categories/presentation/category_providers.dart';
 import '../domain/transaction_entity.dart';
 import '../domain/transaction_validator.dart';
+import '../../budgets/domain/allocate_income_use_case.dart';
 
 class AddTransactionScreen extends ConsumerStatefulWidget {
   const AddTransactionScreen({super.key});
@@ -27,6 +28,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   String? _selectedAccountId;
   String? _selectedToAccountId;
   String? _selectedCategoryId;
+  String? _allocationChoice; // null, 'auto', 'needs', 'wants', 'savings'
   DateTime _selectedDate = DateTime.now();
   bool _isSubmitting = false;
 
@@ -78,7 +80,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
     }
   }
 
-  Future<void> _submit() async {
+Future<void> _submit() async {
     final amount = CurrencyInputFormatter.parse(_amountController.text);
 
     if (amount <= 0) {
@@ -132,6 +134,28 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
         TransactionValidator.validate(transaction);
         await ref.read(transactionRepositoryProvider).createTransaction(transaction);
+
+        if (_type == 'income' && _allocationChoice != null) {
+          try {
+            final allocateUseCase = ref.read(allocateIncomeUseCaseProvider);
+            if (_allocationChoice == 'auto') {
+              await allocateUseCase.allocateAutomatically(
+                amount: amount,
+                transactionDate: _selectedDate,
+              );
+            } else {
+              await allocateUseCase.allocateManually(
+                classification: _allocationChoice!,
+                amount: amount,
+                transactionDate: _selectedDate,
+              );
+            }
+          } catch (_) {
+            if (mounted) {
+              _showError('transaksi tersimpan, tapi gagal mengalokasikan budget');
+            }
+          }
+        }
       }
 
       if (!mounted) {
@@ -151,7 +175,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final accountsAsync = ref.watch(accountsListProvider);
@@ -277,6 +300,21 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                   },
                   loading: () => const _DropdownPlaceholder(text: 'memuat kategori...'),
                   error: (error, stackTrace) => const _DropdownPlaceholder(text: 'gagal memuat kategori'),
+                ),
+              ],
+              if (_type == 'income') ...[
+                const SizedBox(height: 14),
+                _FieldLabel('alokasi 50/30/20 (opsional)'),
+                _DropdownField<String>(
+                  value: _allocationChoice,
+                  hint: 'tidak dialokasikan',
+                  items: const [
+                    DropdownMenuItem(value: 'auto', child: Text('otomatis (50/30/20)')),
+                    DropdownMenuItem(value: 'needs', child: Text('manual: kebutuhan (50%)')),
+                    DropdownMenuItem(value: 'wants', child: Text('manual: keinginan (30%)')),
+                    DropdownMenuItem(value: 'savings', child: Text('manual: tabungan (20%)')),
+                  ],
+                  onChanged: (value) => setState(() => _allocationChoice = value),
                 ),
               ],
               const SizedBox(height: 14),
