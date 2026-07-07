@@ -27,6 +27,7 @@ class Transactions extends Table {
   Set<Column<Object>> get primaryKey => {id};
 
   @override
+  // ignore: override_on_non_overriding_member
   List<Set<Column<Object>>> get indexes => [
     {accountId},
     {toAccountId},

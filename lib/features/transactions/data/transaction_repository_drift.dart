@@ -11,9 +11,15 @@ class TransactionRepositoryDrift implements TransactionRepository {
 
   @override
   Stream<List<TransactionEntity>> watchAllTransactions() {
-    return _database.select(_database.transactions).watch().map(
-          (rows) => rows.map(_toEntity).toList(growable: false),
-        );
+    return (_database.select(_database.transactions)
+          ..orderBy([
+            (table) => OrderingTerm(
+                  expression: table.transactionDate,
+                  mode: OrderingMode.desc,
+                ),
+          ]))
+        .watch()
+        .map((rows) => rows.map(_toEntity).toList(growable: false));
   }
 
   @override

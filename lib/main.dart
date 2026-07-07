@@ -5,7 +5,11 @@ import 'core/theme/app_theme.dart';
 import 'features/splash/presentation/splash_screen.dart';
 
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

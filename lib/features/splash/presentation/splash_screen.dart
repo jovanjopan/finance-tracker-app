@@ -8,8 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/providers/database_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../accounts/domain/account_repository.dart';
+import '../../dashboard/presentation/dashboard_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
-import 'placeholder_home_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -77,7 +77,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
         builder: (_) => _hasAccounts == true
-            ? const PlaceholderHomeScreen()
+            ? const DashboardScreen()
             : const OnboardingScreen(),
       ),
     );

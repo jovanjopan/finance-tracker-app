@@ -5,8 +5,9 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/providers/database_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/currency_input_formatter.dart';
 import '../../accounts/domain/account_entity.dart';
-import '../../splash/presentation/placeholder_home_screen.dart';
+import '../../dashboard/presentation/dashboard_screen.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -82,22 +83,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     TextFormField(
                       controller: _balanceController,
                       style: const TextStyle(color: AppColors.textPrimary),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [CurrencyInputFormatter()],
                       decoration: _inputDecoration(
                         label: 'saldo awal',
                         hintText: '0',
-                      ),
+                      ).copyWith(prefixText: 'Rp '),
                       validator: (value) {
                         final trimmed = value?.trim() ?? '';
                         if (trimmed.isEmpty) {
                           return null;
                         }
-
-                        final parsed = double.tryParse(trimmed.replaceAll(',', '.'));
-                        if (parsed == null || parsed < 0) {
-                          return 'saldo harus berupa angka';
+                        final parsed = CurrencyInputFormatter.parse(trimmed);
+                        if (parsed < 0) {
+                          return 'saldo tidak boleh negatif';
                         }
-
                         return null;
                       },
                     ),
@@ -181,10 +181,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
 
     final name = _nameController.text.trim();
-    final balanceText = _balanceController.text.trim();
-    final initialBalance = balanceText.isEmpty
-        ? 0.0
-        : double.parse(balanceText.replaceAll(',', '.'));
+    final initialBalance = CurrencyInputFormatter.parse(_balanceController.text);
 
     final account = AccountEntity(
       id: const Uuid().v4(),
@@ -206,7 +203,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-          builder: (_) => const PlaceholderHomeScreen(),
+          builder: (_) => const DashboardScreen(),
         ),
       );
     } catch (_) {
