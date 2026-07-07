@@ -21,6 +21,7 @@ class AddTransactionScreen extends ConsumerStatefulWidget {
 
 class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
 
   String _type = 'expense';
   String? _selectedAccountId;
@@ -29,12 +30,12 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
   DateTime _selectedDate = DateTime.now();
   bool _isSubmitting = false;
 
-  @override
+@override
   void dispose() {
     _amountController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
-
   Color get _typeColor {
     switch (_type) {
       case 'income':
@@ -126,6 +127,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
           transactionDate: _selectedDate,
           accountId: _selectedAccountId!,
           categoryId: _selectedCategoryId,
+          note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
         );
 
         TransactionValidator.validate(transaction);
@@ -297,6 +299,24 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                       ),
                       const Icon(Icons.calendar_today, size: 18, color: AppColors.textMuted),
                     ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              _FieldLabel('catatan (opsional)'),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border.all(color: AppColors.border, width: 2),
+                ),
+                child: TextField(
+                  controller: _noteController,
+                  style: GoogleFonts.vt323(fontSize: 18, color: AppColors.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: 'misal: makan ayam geprek',
+                    hintStyle: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: InputBorder.none,
                   ),
                 ),
               ),

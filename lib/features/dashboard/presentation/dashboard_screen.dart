@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../categories/presentation/category_providers.dart';
 import '../../transactions/domain/transaction_entity.dart';
 import '../../transactions/presentation/add_transaction_screen.dart';
 import 'dashboard_providers.dart';
@@ -150,13 +151,15 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _TransactionTile extends StatelessWidget {
+class _TransactionTile extends ConsumerWidget {
   const _TransactionTile({required this.transaction});
 
   final TransactionEntity transaction;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final categoriesAsync = ref.watch(categoriesListProvider);
+
     final isIncome = transaction.type == 'income';
     final isExpense = transaction.type == 'expense';
 
@@ -168,6 +171,21 @@ class _TransactionTile extends StatelessWidget {
 
     final String sign = isIncome ? '+' : (isExpense ? '-' : '');
 
+    final String categoryLabel = categoriesAsync.maybeWhen(
+      data: (categories) {
+        if (transaction.categoryId == null) {
+          return _fallbackTypeLabel(transaction.type);
+        }
+        final match = categories.where((c) => c.id == transaction.categoryId);
+        return match.isEmpty ? _fallbackTypeLabel(transaction.type) : match.first.name;
+      },
+      orElse: () => _fallbackTypeLabel(transaction.type),
+    );
+
+    final String? noteLabel = transaction.note?.trim().isNotEmpty == true
+        ? transaction.note!.trim()
+        : null;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
@@ -175,9 +193,19 @@ class _TransactionTile extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              transaction.type,
-              style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textPrimary),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  categoryLabel,
+                  style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textPrimary),
+                ),
+                if (noteLabel != null)
+                  Text(
+                    noteLabel,
+                    style: GoogleFonts.vt323(fontSize: 13, color: AppColors.textMuted),
+                  ),
+              ],
             ),
           ),
           Text(
@@ -187,5 +215,18 @@ class _TransactionTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _fallbackTypeLabel(String type) {
+    switch (type) {
+      case 'income':
+        return 'pemasukan';
+      case 'expense':
+        return 'pengeluaran';
+      case 'transfer':
+        return 'transfer';
+      default:
+        return type;
+    }
   }
 }

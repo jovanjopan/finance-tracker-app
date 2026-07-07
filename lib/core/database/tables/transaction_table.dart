@@ -11,6 +11,8 @@ class Transactions extends Table {
 
   TextColumn get type => text()();
 
+  TextColumn get note => text().nullable()();
+
   RealColumn get amount => real()();
 
   DateTimeColumn get transactionDate => dateTime()();
@@ -32,5 +34,6 @@ class Transactions extends Table {
     {accountId},
     {toAccountId},
     {transactionDate},
+    
   ];
 }

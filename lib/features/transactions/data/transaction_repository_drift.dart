@@ -48,7 +48,7 @@ class TransactionRepositoryDrift implements TransactionRepository {
         .go();
   }
 
-  TransactionEntity _toEntity(Transaction row) {
+TransactionEntity _toEntity(Transaction row) {
     return TransactionEntity(
       id: row.id,
       type: row.type,
@@ -57,10 +57,11 @@ class TransactionRepositoryDrift implements TransactionRepository {
       accountId: row.accountId,
       toAccountId: row.toAccountId,
       categoryId: row.categoryId,
+      note: row.note,
     );
   }
 
-  TransactionsCompanion _toCompanion(TransactionEntity transaction) {
+TransactionsCompanion _toCompanion(TransactionEntity transaction) {
     return TransactionsCompanion.insert(
       id: transaction.id,
       type: transaction.type,
@@ -73,6 +74,9 @@ class TransactionRepositoryDrift implements TransactionRepository {
       categoryId: transaction.categoryId == null
           ? const Value.absent()
           : Value<String?>(transaction.categoryId),
+      note: transaction.note == null
+          ? const Value.absent()
+          : Value<String?>(transaction.note),
     );
   }
 }

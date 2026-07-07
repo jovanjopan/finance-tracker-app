@@ -7,6 +7,7 @@ class TransactionEntity {
     required this.accountId,
     this.toAccountId,
     this.categoryId,
+    this.note,
   });
 
   final String id;
@@ -16,4 +17,5 @@ class TransactionEntity {
   final String accountId;
   final String? toAccountId;
   final String? categoryId;
+  final String? note;
 }
