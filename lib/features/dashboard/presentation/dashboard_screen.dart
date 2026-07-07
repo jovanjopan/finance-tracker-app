@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../transactions/domain/transaction_entity.dart';
+import '../../transactions/presentation/add_transaction_screen.dart';
 import 'dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -18,6 +19,18 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.accentGamify,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const AddTransactionScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add, color: AppColors.background),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),

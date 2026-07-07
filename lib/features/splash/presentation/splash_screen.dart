@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../core/database/default_category_seeder.dart';
 import '../../../core/providers/database_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../accounts/domain/account_repository.dart';
+import '../../categories/domain/category_repository.dart';
 import '../../dashboard/presentation/dashboard_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
 
@@ -62,12 +64,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _initializationStarted = true;
 
     final accountRepository = ref.read(accountRepositoryProvider);
+    final categoryRepository = ref.read(categoryRepositoryProvider);
 
-    final initializationFuture = _resolveHasAccounts(accountRepository);
+    final accountCheckFuture = _resolveHasAccounts(accountRepository);
+    final categorySeedFuture = _seedDefaultCategories(categoryRepository);
 
     await Future.wait<void>([
       Future<void>.delayed(_minimumSplashDuration),
-      initializationFuture,
+      accountCheckFuture,
+      categorySeedFuture,
     ]);
 
     if (!mounted) {
@@ -91,6 +96,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     } catch (error, stackTrace) {
       _hasAccounts = false;
       debugPrint('[Splash] account check failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
+  Future<void> _seedDefaultCategories(CategoryRepository categoryRepository) async {
+    try {
+      await DefaultCategorySeeder.seedIfNeeded(categoryRepository);
+      debugPrint('[Splash] category seeding completed');
+    } catch (error, stackTrace) {
+      debugPrint('[Splash] category seeding failed: $error');
       debugPrintStack(stackTrace: stackTrace);
     }
   }

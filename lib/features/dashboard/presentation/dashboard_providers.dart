@@ -1,16 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/database_providers.dart';
 import '../../accounts/domain/account_entity.dart';
+import '../../accounts/presentation/account_providers.dart';
 import '../../transactions/domain/transaction_entity.dart';
+import '../../transactions/presentation/transaction_providers.dart';
 
-final accountsListProvider = StreamProvider<List<AccountEntity>>((ref) {
-  return ref.watch(accountRepositoryProvider).watchAllAccounts();
-});
-
-final allTransactionsProvider = StreamProvider<List<TransactionEntity>>((ref) {
-  return ref.watch(transactionRepositoryProvider).watchAllTransactions();
-});
+export '../../accounts/presentation/account_providers.dart';
+export '../../transactions/presentation/transaction_providers.dart';
 
 final totalBalanceProvider = Provider<AsyncValue<double>>((ref) {
   final accountsAsync = ref.watch(accountsListProvider);

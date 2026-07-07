@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinancetracker/core/providers/database_providers.dart';
 import 'package:myfinancetracker/features/accounts/domain/account_entity.dart';
 import 'package:myfinancetracker/features/accounts/domain/account_repository.dart';
+import 'package:myfinancetracker/features/categories/domain/category_entity.dart';
+import 'package:myfinancetracker/features/categories/domain/category_repository.dart';
 import 'package:myfinancetracker/features/transactions/domain/transaction_entity.dart';
 import 'package:myfinancetracker/features/transactions/domain/transaction_repository.dart';
 import 'package:myfinancetracker/main.dart';
@@ -15,6 +17,7 @@ void main() {
         overrides: [
           accountRepositoryProvider.overrideWithValue(_FakeAccountRepository()),
           transactionRepositoryProvider.overrideWithValue(const _FakeTransactionRepository()),
+          categoryRepositoryProvider.overrideWithValue(const _FakeCategoryRepository()),
         ],
         child: const MyApp(),
       ),
@@ -44,6 +47,7 @@ void main() {
             ]),
           ),
           transactionRepositoryProvider.overrideWithValue(const _FakeTransactionRepository()),
+          categoryRepositoryProvider.overrideWithValue(const _FakeCategoryRepository()),
         ],
         child: const MyApp(),
       ),
@@ -104,5 +108,28 @@ class _FakeTransactionRepository implements TransactionRepository {
   @override
   Stream<List<TransactionEntity>> watchTransactionsByAccount(String accountId) {
     return Stream<List<TransactionEntity>>.value(_transactions);
+  }
+}
+
+class _FakeCategoryRepository implements CategoryRepository {
+  const _FakeCategoryRepository([this._categories = const <CategoryEntity>[]]);
+
+  final List<CategoryEntity> _categories;
+
+  @override
+  Future<void> createCategory(CategoryEntity category) async {}
+
+  @override
+  Future<void> deleteCategory(String id) async {}
+
+  @override
+  Future<CategoryEntity?> getCategoryById(String id) async => null;
+
+  @override
+  Future<void> updateCategory(CategoryEntity category) async {}
+
+  @override
+  Stream<List<CategoryEntity>> watchAllCategories() {
+    return Stream<List<CategoryEntity>>.value(_categories);
   }
 }
