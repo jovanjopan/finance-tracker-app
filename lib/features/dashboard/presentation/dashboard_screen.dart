@@ -11,6 +11,9 @@ import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
 import '../../accounts/presentation/account_list_screen.dart';
 import '../../categories/presentation/category_list_screen.dart';
+import '../../forecasting/presentation/burn_rate_panel.dart';
+
+
 
 
 class DashboardScreen extends ConsumerWidget {
@@ -135,6 +138,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             const HealthPointPanel(),
+            const BurnRatePanel(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
