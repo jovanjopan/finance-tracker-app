@@ -13,6 +13,7 @@ import '../../features/transactions/domain/delete_transaction_use_case.dart';
 import '../../features/transactions/domain/transaction_repository.dart';
 import '../../features/transactions/domain/transfer_money_use_case.dart';
 import '../../features/transactions/domain/update_transaction_use_case.dart';
+import '../../features/accounts/domain/update_account_use_case.dart';
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final database = AppDatabase();
@@ -64,5 +65,12 @@ final deleteTransactionUseCaseProvider = Provider<DeleteTransactionUseCase>((ref
   return DeleteTransactionUseCase(
     transactionRepository: ref.watch(transactionRepositoryProvider),
     allocateIncomeUseCase: ref.watch(allocateIncomeUseCaseProvider),
+  );
+
+});
+
+final updateAccountUseCaseProvider = Provider<UpdateAccountUseCase>((ref) {
+  return UpdateAccountUseCase(
+    accountRepository: ref.watch(accountRepositoryProvider),
   );
 });

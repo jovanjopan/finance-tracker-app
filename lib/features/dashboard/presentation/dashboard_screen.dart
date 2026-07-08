@@ -9,6 +9,8 @@ import '../../transactions/presentation/add_transaction_screen.dart';
 import '../../transactions/presentation/transaction_list_screen.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
+import '../../accounts/presentation/account_list_screen.dart';
+
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -37,12 +39,27 @@ class DashboardScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              'koinku',
-              style: GoogleFonts.pressStart2p(
-                fontSize: 16,
-                color: AppColors.textPrimary,
-              ),
+             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'koinku',
+                  style: GoogleFonts.pressStart2p(
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const AccountListScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.account_balance_wallet_outlined, color: AppColors.textPrimary),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Container(
