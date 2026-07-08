@@ -10,6 +10,7 @@ import '../../transactions/presentation/transaction_list_screen.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
 import '../../accounts/presentation/account_list_screen.dart';
+import '../../categories/presentation/category_list_screen.dart';
 
 
 class DashboardScreen extends ConsumerWidget {
@@ -39,7 +40,7 @@ class DashboardScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-             Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
@@ -49,15 +50,29 @@ class DashboardScreen extends ConsumerWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const AccountListScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.account_balance_wallet_outlined, color: AppColors.textPrimary),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const CategoryListScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.label_outline, color: AppColors.textPrimary),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const AccountListScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.account_balance_wallet_outlined, color: AppColors.textPrimary),
+                    ),
+                  ],
                 ),
               ],
             ),
