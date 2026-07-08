@@ -13,6 +13,8 @@ class Transactions extends Table {
 
   TextColumn get note => text().nullable()();
 
+  TextColumn get allocationType => text().nullable()();
+
   RealColumn get amount => real()();
 
   DateTimeColumn get transactionDate => dateTime()();

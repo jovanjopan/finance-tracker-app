@@ -734,6 +734,17 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _allocationTypeMeta = const VerificationMeta(
+    'allocationType',
+  );
+  @override
+  late final GeneratedColumn<String> allocationType = GeneratedColumn<String>(
+    'allocation_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double> amount = GeneratedColumn<double>(
@@ -802,6 +813,7 @@ class $TransactionsTable extends Transactions
     id,
     type,
     note,
+    allocationType,
     amount,
     transactionDate,
     accountId,
@@ -837,6 +849,15 @@ class $TransactionsTable extends Transactions
       context.handle(
         _noteMeta,
         note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('allocation_type')) {
+      context.handle(
+        _allocationTypeMeta,
+        allocationType.isAcceptableOrUnknown(
+          data['allocation_type']!,
+          _allocationTypeMeta,
+        ),
       );
     }
     if (data.containsKey('amount')) {
@@ -902,6 +923,10 @@ class $TransactionsTable extends Transactions
         DriftSqlType.string,
         data['${effectivePrefix}note'],
       ),
+      allocationType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}allocation_type'],
+      ),
       amount: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}amount'],
@@ -935,6 +960,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final String id;
   final String type;
   final String? note;
+  final String? allocationType;
   final double amount;
   final DateTime transactionDate;
   final String accountId;
@@ -944,6 +970,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     required this.id,
     required this.type,
     this.note,
+    this.allocationType,
     required this.amount,
     required this.transactionDate,
     required this.accountId,
@@ -957,6 +984,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     map['type'] = Variable<String>(type);
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
+    }
+    if (!nullToAbsent || allocationType != null) {
+      map['allocation_type'] = Variable<String>(allocationType);
     }
     map['amount'] = Variable<double>(amount);
     map['transaction_date'] = Variable<DateTime>(transactionDate);
@@ -975,6 +1005,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: Value(id),
       type: Value(type),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      allocationType: allocationType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(allocationType),
       amount: Value(amount),
       transactionDate: Value(transactionDate),
       accountId: Value(accountId),
@@ -996,6 +1029,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: serializer.fromJson<String>(json['id']),
       type: serializer.fromJson<String>(json['type']),
       note: serializer.fromJson<String?>(json['note']),
+      allocationType: serializer.fromJson<String?>(json['allocationType']),
       amount: serializer.fromJson<double>(json['amount']),
       transactionDate: serializer.fromJson<DateTime>(json['transactionDate']),
       accountId: serializer.fromJson<String>(json['accountId']),
@@ -1010,6 +1044,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'id': serializer.toJson<String>(id),
       'type': serializer.toJson<String>(type),
       'note': serializer.toJson<String?>(note),
+      'allocationType': serializer.toJson<String?>(allocationType),
       'amount': serializer.toJson<double>(amount),
       'transactionDate': serializer.toJson<DateTime>(transactionDate),
       'accountId': serializer.toJson<String>(accountId),
@@ -1022,6 +1057,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     String? id,
     String? type,
     Value<String?> note = const Value.absent(),
+    Value<String?> allocationType = const Value.absent(),
     double? amount,
     DateTime? transactionDate,
     String? accountId,
@@ -1031,6 +1067,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     id: id ?? this.id,
     type: type ?? this.type,
     note: note.present ? note.value : this.note,
+    allocationType: allocationType.present
+        ? allocationType.value
+        : this.allocationType,
     amount: amount ?? this.amount,
     transactionDate: transactionDate ?? this.transactionDate,
     accountId: accountId ?? this.accountId,
@@ -1042,6 +1081,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
       note: data.note.present ? data.note.value : this.note,
+      allocationType: data.allocationType.present
+          ? data.allocationType.value
+          : this.allocationType,
       amount: data.amount.present ? data.amount.value : this.amount,
       transactionDate: data.transactionDate.present
           ? data.transactionDate.value
@@ -1062,6 +1104,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('id: $id, ')
           ..write('type: $type, ')
           ..write('note: $note, ')
+          ..write('allocationType: $allocationType, ')
           ..write('amount: $amount, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('accountId: $accountId, ')
@@ -1076,6 +1119,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     id,
     type,
     note,
+    allocationType,
     amount,
     transactionDate,
     accountId,
@@ -1089,6 +1133,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.id == this.id &&
           other.type == this.type &&
           other.note == this.note &&
+          other.allocationType == this.allocationType &&
           other.amount == this.amount &&
           other.transactionDate == this.transactionDate &&
           other.accountId == this.accountId &&
@@ -1100,6 +1145,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String> id;
   final Value<String> type;
   final Value<String?> note;
+  final Value<String?> allocationType;
   final Value<double> amount;
   final Value<DateTime> transactionDate;
   final Value<String> accountId;
@@ -1110,6 +1156,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.id = const Value.absent(),
     this.type = const Value.absent(),
     this.note = const Value.absent(),
+    this.allocationType = const Value.absent(),
     this.amount = const Value.absent(),
     this.transactionDate = const Value.absent(),
     this.accountId = const Value.absent(),
@@ -1121,6 +1168,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     required String id,
     required String type,
     this.note = const Value.absent(),
+    this.allocationType = const Value.absent(),
     required double amount,
     required DateTime transactionDate,
     required String accountId,
@@ -1136,6 +1184,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<String>? id,
     Expression<String>? type,
     Expression<String>? note,
+    Expression<String>? allocationType,
     Expression<double>? amount,
     Expression<DateTime>? transactionDate,
     Expression<String>? accountId,
@@ -1147,6 +1196,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (id != null) 'id': id,
       if (type != null) 'type': type,
       if (note != null) 'note': note,
+      if (allocationType != null) 'allocation_type': allocationType,
       if (amount != null) 'amount': amount,
       if (transactionDate != null) 'transaction_date': transactionDate,
       if (accountId != null) 'account_id': accountId,
@@ -1160,6 +1210,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<String>? id,
     Value<String>? type,
     Value<String?>? note,
+    Value<String?>? allocationType,
     Value<double>? amount,
     Value<DateTime>? transactionDate,
     Value<String>? accountId,
@@ -1171,6 +1222,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       id: id ?? this.id,
       type: type ?? this.type,
       note: note ?? this.note,
+      allocationType: allocationType ?? this.allocationType,
       amount: amount ?? this.amount,
       transactionDate: transactionDate ?? this.transactionDate,
       accountId: accountId ?? this.accountId,
@@ -1191,6 +1243,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     }
     if (note.present) {
       map['note'] = Variable<String>(note.value);
+    }
+    if (allocationType.present) {
+      map['allocation_type'] = Variable<String>(allocationType.value);
     }
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
@@ -1219,6 +1274,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('id: $id, ')
           ..write('type: $type, ')
           ..write('note: $note, ')
+          ..write('allocationType: $allocationType, ')
           ..write('amount: $amount, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('accountId: $accountId, ')
@@ -2384,6 +2440,7 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       required String id,
       required String type,
       Value<String?> note,
+      Value<String?> allocationType,
       required double amount,
       required DateTime transactionDate,
       required String accountId,
@@ -2396,6 +2453,7 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> type,
       Value<String?> note,
+      Value<String?> allocationType,
       Value<double> amount,
       Value<DateTime> transactionDate,
       Value<String> accountId,
@@ -2481,6 +2539,11 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<String> get note => $composableBuilder(
     column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get allocationType => $composableBuilder(
+    column: $table.allocationType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2588,6 +2651,11 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get allocationType => $composableBuilder(
+    column: $table.allocationType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get amount => $composableBuilder(
     column: $table.amount,
     builder: (column) => ColumnOrderings(column),
@@ -2685,6 +2753,11 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get allocationType => $composableBuilder(
+    column: $table.allocationType,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<double> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
@@ -2799,6 +2872,7 @@ class $$TransactionsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String?> note = const Value.absent(),
+                Value<String?> allocationType = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<DateTime> transactionDate = const Value.absent(),
                 Value<String> accountId = const Value.absent(),
@@ -2809,6 +2883,7 @@ class $$TransactionsTableTableManager
                 id: id,
                 type: type,
                 note: note,
+                allocationType: allocationType,
                 amount: amount,
                 transactionDate: transactionDate,
                 accountId: accountId,
@@ -2821,6 +2896,7 @@ class $$TransactionsTableTableManager
                 required String id,
                 required String type,
                 Value<String?> note = const Value.absent(),
+                Value<String?> allocationType = const Value.absent(),
                 required double amount,
                 required DateTime transactionDate,
                 required String accountId,
@@ -2831,6 +2907,7 @@ class $$TransactionsTableTableManager
                 id: id,
                 type: type,
                 note: note,
+                allocationType: allocationType,
                 amount: amount,
                 transactionDate: transactionDate,
                 accountId: accountId,

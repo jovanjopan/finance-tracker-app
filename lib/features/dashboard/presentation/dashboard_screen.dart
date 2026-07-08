@@ -162,7 +162,7 @@ class _TransactionTile extends ConsumerWidget {
 
   final TransactionEntity transaction;
 
-  @override
+@override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesListProvider);
 
@@ -192,33 +192,42 @@ class _TransactionTile extends ConsumerWidget {
         ? transaction.note!.trim()
         : null;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-      color: AppColors.surface,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  categoryLabel,
-                  style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textPrimary),
-                ),
-                if (noteLabel != null)
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => AddTransactionScreen(existingTransaction: transaction),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        color: AppColors.surface,
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    noteLabel,
-                    style: GoogleFonts.vt323(fontSize: 13, color: AppColors.textMuted),
+                    categoryLabel,
+                    style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textPrimary),
                   ),
-              ],
+                  if (noteLabel != null)
+                    Text(
+                      noteLabel,
+                      style: GoogleFonts.vt323(fontSize: 13, color: AppColors.textMuted),
+                    ),
+                ],
+              ),
             ),
-          ),
-          Text(
-            '$sign${CurrencyFormatter.format(transaction.amount)}',
-            style: GoogleFonts.vt323(fontSize: 16, color: amountColor),
-          ),
-        ],
+            Text(
+              '$sign${CurrencyFormatter.format(transaction.amount)}',
+              style: GoogleFonts.vt323(fontSize: 16, color: amountColor),
+            ),
+          ],
+        ),
       ),
     );
   }

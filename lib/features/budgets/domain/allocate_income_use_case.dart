@@ -18,9 +18,9 @@ class AllocateIncomeUseCase {
     required double amount,
     required DateTime transactionDate,
   }) async {
-    await _allocateToClassification('needs', amount * needsPercentage, transactionDate);
-    await _allocateToClassification('wants', amount * wantsPercentage, transactionDate);
-    await _allocateToClassification('savings', amount * savingsPercentage, transactionDate);
+    await _applyDelta('needs', amount * needsPercentage, transactionDate);
+    await _applyDelta('wants', amount * wantsPercentage, transactionDate);
+    await _applyDelta('savings', amount * savingsPercentage, transactionDate);
   }
 
   Future<void> allocateManually({
@@ -28,12 +28,34 @@ class AllocateIncomeUseCase {
     required double amount,
     required DateTime transactionDate,
   }) async {
-    await _allocateToClassification(classification, amount, transactionDate);
+    await _applyDelta(classification, amount, transactionDate);
   }
 
-  Future<void> _allocateToClassification(
+  /// Membalik alokasi otomatis yang pernah diterapkan (dipanggil saat
+  /// transaksi income dengan allocationType == 'auto' diedit/dihapus).
+  Future<void> reverseAutomaticAllocation({
+    required double amount,
+    required DateTime transactionDate,
+  }) async {
+    await _applyDelta('needs', -(amount * needsPercentage), transactionDate);
+    await _applyDelta('wants', -(amount * wantsPercentage), transactionDate);
+    await _applyDelta('savings', -(amount * savingsPercentage), transactionDate);
+  }
+
+  /// Membalik alokasi manual yang pernah diterapkan (dipanggil saat
+  /// transaksi income dengan allocationType == 'needs'/'wants'/'savings'
+  /// diedit/dihapus).
+  Future<void> reverseManualAllocation({
+    required String classification,
+    required double amount,
+    required DateTime transactionDate,
+  }) async {
+    await _applyDelta(classification, -amount, transactionDate);
+  }
+
+  Future<void> _applyDelta(
     String classification,
-    double amount,
+    double delta,
     DateTime date,
   ) async {
     final existing = await _budgetRepository.getClassificationBudgetForDate(
@@ -42,10 +64,13 @@ class AllocateIncomeUseCase {
     );
 
     if (existing != null) {
+      final newTarget = existing.targetAmount + delta;
       final updated = BudgetEntity(
         id: existing.id,
         classification: classification,
-        targetAmount: existing.targetAmount + amount,
+        // Dijaga tidak negatif untuk berjaga-jaga terhadap
+        // inkonsistensi data (misal reversal ganda akibat bug lain).
+        targetAmount: newTarget < 0 ? 0 : newTarget,
         startDate: existing.startDate,
         endDate: existing.endDate,
       );
@@ -54,11 +79,16 @@ class AllocateIncomeUseCase {
       return;
     }
 
+    if (delta <= 0) {
+      // Tidak ada baris untuk dibalik dan delta bukan penambahan baru.
+      return;
+    }
+
     final period = _monthPeriodFor(date);
     final created = BudgetEntity(
       id: const Uuid().v4(),
       classification: classification,
-      targetAmount: amount,
+      targetAmount: delta,
       startDate: period.start,
       endDate: period.end,
     );

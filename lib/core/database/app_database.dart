@@ -19,7 +19,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -38,6 +38,9 @@ onUpgrade: (Migrator m, int from, int to) async {
             'SELECT id, category_id, NULL, target_amount, start_date, end_date FROM budgets_old',
           );
           await customStatement('DROP TABLE budgets_old');
+        }
+        if (from < 4) {
+          await m.addColumn(transactions, transactions.allocationType); 
         }
       },
   );

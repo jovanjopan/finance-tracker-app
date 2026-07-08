@@ -141,6 +141,12 @@ class _FakeTransactionRepository implements TransactionRepository {
   const _FakeTransactionRepository();
 
   @override
+  Future<TransactionEntity?> getTransactionById(String id) async => null;
+
+  @override
+  Future<void> updateTransaction(TransactionEntity transaction) async {}
+  
+  @override
   Future<void> createTransaction(TransactionEntity transaction) async {}
 
   @override

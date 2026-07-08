@@ -99,6 +99,12 @@ class _FakeTransactionRepository implements TransactionRepository {
   final List<TransactionEntity> _transactions;
 
   @override
+  Future<TransactionEntity?> getTransactionById(String id) async => null;
+
+  @override
+  Future<void> updateTransaction(TransactionEntity transaction) async {}
+
+  @override
   Future<void> createTransaction(TransactionEntity transaction) async {}
 
   @override

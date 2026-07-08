@@ -35,10 +35,26 @@ class TransactionRepositoryDrift implements TransactionRepository {
   }
 
   @override
+  Future<TransactionEntity?> getTransactionById(String id) async {
+    final row = await (_database.select(_database.transactions)
+          ..where((table) => table.id.equals(id)))
+        .getSingleOrNull();
+
+    return row == null ? null : _toEntity(row);
+  }
+
+  @override
   Future<void> createTransaction(TransactionEntity transaction) {
     return _database.into(_database.transactions).insert(
           _toCompanion(transaction),
         );
+  }
+
+  @override
+  Future<void> updateTransaction(TransactionEntity transaction) {
+    return (_database.update(_database.transactions)
+          ..where((table) => table.id.equals(transaction.id)))
+        .write(_toCompanion(transaction));
   }
 
   @override
@@ -48,7 +64,7 @@ class TransactionRepositoryDrift implements TransactionRepository {
         .go();
   }
 
-TransactionEntity _toEntity(Transaction row) {
+  TransactionEntity _toEntity(Transaction row) {
     return TransactionEntity(
       id: row.id,
       type: row.type,
@@ -58,10 +74,11 @@ TransactionEntity _toEntity(Transaction row) {
       toAccountId: row.toAccountId,
       categoryId: row.categoryId,
       note: row.note,
+      allocationType: row.allocationType,
     );
   }
 
-TransactionsCompanion _toCompanion(TransactionEntity transaction) {
+  TransactionsCompanion _toCompanion(TransactionEntity transaction) {
     return TransactionsCompanion.insert(
       id: transaction.id,
       type: transaction.type,
@@ -77,6 +94,9 @@ TransactionsCompanion _toCompanion(TransactionEntity transaction) {
       note: transaction.note == null
           ? const Value.absent()
           : Value<String?>(transaction.note),
+      allocationType: transaction.allocationType == null
+          ? const Value.absent()
+          : Value<String?>(transaction.allocationType),
     );
   }
 }

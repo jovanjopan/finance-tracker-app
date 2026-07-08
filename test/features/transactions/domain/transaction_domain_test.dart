@@ -349,6 +349,11 @@ class FakeAccountRepository implements AccountRepository {
 class FakeTransactionRepository implements TransactionRepository {
   final List<TransactionEntity> createdTransactions = <TransactionEntity>[];
 
+@override
+  Future<TransactionEntity?> getTransactionById(String id) async => null;
+
+  @override
+  Future<void> updateTransaction(TransactionEntity transaction) async {}
   @override
   Future<void> createTransaction(TransactionEntity transaction) async {
     createdTransactions.add(transaction);

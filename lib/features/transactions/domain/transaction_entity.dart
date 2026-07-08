@@ -8,6 +8,7 @@ class TransactionEntity {
     this.toAccountId,
     this.categoryId,
     this.note,
+    this.allocationType,
   });
 
   final String id;
@@ -18,4 +19,10 @@ class TransactionEntity {
   final String? toAccountId;
   final String? categoryId;
   final String? note;
+
+  /// null, 'auto', 'needs', 'wants', atau 'savings'. Hanya relevan untuk
+  /// transaksi type == 'income' yang dialokasikan ke Budget 50/30/20.
+  /// Disimpan supaya alokasi bisa dibalik dengan tepat saat transaksi
+  /// ini diedit atau dihapus.
+  final String? allocationType;
 }

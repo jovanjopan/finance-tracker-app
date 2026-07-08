@@ -9,8 +9,10 @@ import '../../features/budgets/domain/budget_repository.dart';
 import '../../features/categories/data/category_repository_drift.dart';
 import '../../features/categories/domain/category_repository.dart';
 import '../../features/transactions/data/transaction_repository_drift.dart';
+import '../../features/transactions/domain/delete_transaction_use_case.dart';
 import '../../features/transactions/domain/transaction_repository.dart';
 import '../../features/transactions/domain/transfer_money_use_case.dart';
+import '../../features/transactions/domain/update_transaction_use_case.dart';
 
 final appDatabaseProvider = Provider<AppDatabase>((ref) {
   final database = AppDatabase();
@@ -48,5 +50,19 @@ final transferMoneyUseCaseProvider = Provider<TransferMoneyUseCase>((ref) {
 final allocateIncomeUseCaseProvider = Provider<AllocateIncomeUseCase>((ref) {
   return AllocateIncomeUseCase(
     budgetRepository: ref.watch(budgetRepositoryProvider),
+  );
+});
+
+final updateTransactionUseCaseProvider = Provider<UpdateTransactionUseCase>((ref) {
+  return UpdateTransactionUseCase(
+    transactionRepository: ref.watch(transactionRepositoryProvider),
+    allocateIncomeUseCase: ref.watch(allocateIncomeUseCaseProvider),
+  );
+});
+
+final deleteTransactionUseCaseProvider = Provider<DeleteTransactionUseCase>((ref) {
+  return DeleteTransactionUseCase(
+    transactionRepository: ref.watch(transactionRepositoryProvider),
+    allocateIncomeUseCase: ref.watch(allocateIncomeUseCaseProvider),
   );
 });
