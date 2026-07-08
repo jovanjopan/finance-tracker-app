@@ -8,6 +8,8 @@ import '../../categories/presentation/category_providers.dart';
 import '../../transactions/domain/transaction_entity.dart';
 import '../../transactions/presentation/add_transaction_screen.dart';
 import 'dashboard_providers.dart';
+import '../../budgets/presentation/health_point_panel.dart';
+
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -100,6 +102,10 @@ class DashboardScreen extends ConsumerWidget {
                 ],
               ),
             ),
+
+            const SizedBox(height: 20),
+            const HealthPointPanel(),
+            
             const SizedBox(height: 20),
             Text(
               'transaksi terakhir',

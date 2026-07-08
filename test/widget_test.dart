@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myfinancetracker/core/providers/database_providers.dart';
 import 'package:myfinancetracker/features/accounts/domain/account_entity.dart';
 import 'package:myfinancetracker/features/accounts/domain/account_repository.dart';
+import 'package:myfinancetracker/features/budgets/domain/budget_entity.dart';
+import 'package:myfinancetracker/features/budgets/domain/budget_repository.dart';
 import 'package:myfinancetracker/features/categories/domain/category_entity.dart';
 import 'package:myfinancetracker/features/categories/domain/category_repository.dart';
 import 'package:myfinancetracker/features/transactions/domain/transaction_entity.dart';
@@ -18,6 +20,7 @@ void main() {
           accountRepositoryProvider.overrideWithValue(_FakeAccountRepository()),
           transactionRepositoryProvider.overrideWithValue(const _FakeTransactionRepository()),
           categoryRepositoryProvider.overrideWithValue(const _FakeCategoryRepository()),
+          budgetRepositoryProvider.overrideWithValue(const _FakeBudgetRepository()),
         ],
         child: const MyApp(),
       ),
@@ -48,6 +51,7 @@ void main() {
           ),
           transactionRepositoryProvider.overrideWithValue(const _FakeTransactionRepository()),
           categoryRepositoryProvider.overrideWithValue(const _FakeCategoryRepository()),
+          budgetRepositoryProvider.overrideWithValue(const _FakeBudgetRepository()),
         ],
         child: const MyApp(),
       ),
@@ -132,4 +136,31 @@ class _FakeCategoryRepository implements CategoryRepository {
   Stream<List<CategoryEntity>> watchAllCategories() {
     return Stream<List<CategoryEntity>>.value(_categories);
   }
+}
+
+class _FakeBudgetRepository implements BudgetRepository {
+  const _FakeBudgetRepository();
+
+  @override
+  Future<void> createBudget(BudgetEntity budget) async {}
+
+  @override
+  Future<void> deleteBudget(String id) async {}
+
+  @override
+  Future<BudgetEntity?> getBudgetById(String id) async => null;
+
+  @override
+  Future<void> updateBudget(BudgetEntity budget) async {}
+
+  @override
+  Stream<List<BudgetEntity>> watchAllBudgets() {
+    return Stream<List<BudgetEntity>>.value(const <BudgetEntity>[]);
+  }
+
+  @override
+  Future<BudgetEntity?> getClassificationBudgetForDate(
+    String classification,
+    DateTime date,
+  ) async => null;
 }
