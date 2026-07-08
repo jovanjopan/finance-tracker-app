@@ -4,12 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
-import '../../categories/presentation/category_providers.dart';
-import '../../transactions/domain/transaction_entity.dart';
-import '../../transactions/presentation/add_transaction_screen.dart';
-import 'dashboard_providers.dart';
 import '../../budgets/presentation/health_point_panel.dart';
-
+import '../../transactions/presentation/add_transaction_screen.dart';
+import '../../transactions/presentation/transaction_list_screen.dart';
+import '../../transactions/presentation/transaction_list_tile.dart';
+import 'dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -102,17 +101,32 @@ class DashboardScreen extends ConsumerWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
             const HealthPointPanel(),
-            
-            const SizedBox(height: 20),
-            Text(
-              'transaksi terakhir',
-              style: GoogleFonts.vt323(
-                fontSize: 18,
-                color: AppColors.textPrimary,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'transaksi terakhir',
+                  style: GoogleFonts.vt323(
+                    fontSize: 18,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const TransactionListScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'lihat semua',
+                    style: GoogleFonts.vt323(fontSize: 15, color: AppColors.primary),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             transactionsAsync.when(
@@ -132,7 +146,7 @@ class DashboardScreen extends ConsumerWidget {
                 final recent = transactions.take(5).toList();
                 return Column(
                   children: recent
-                      .map((transaction) => _TransactionTile(transaction: transaction))
+                      .map((transaction) => TransactionListTile(transaction: transaction))
                       .toList(),
                 );
               },
@@ -154,94 +168,5 @@ class DashboardScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-}
-
-class _TransactionTile extends ConsumerWidget {
-  const _TransactionTile({required this.transaction});
-
-  final TransactionEntity transaction;
-
-@override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final categoriesAsync = ref.watch(categoriesListProvider);
-
-    final isIncome = transaction.type == 'income';
-    final isExpense = transaction.type == 'expense';
-
-    final Color amountColor = isIncome
-        ? AppColors.positive
-        : isExpense
-            ? AppColors.negative
-            : AppColors.textPrimary;
-
-    final String sign = isIncome ? '+' : (isExpense ? '-' : '');
-
-    final String categoryLabel = categoriesAsync.maybeWhen(
-      data: (categories) {
-        if (transaction.categoryId == null) {
-          return _fallbackTypeLabel(transaction.type);
-        }
-        final match = categories.where((c) => c.id == transaction.categoryId);
-        return match.isEmpty ? _fallbackTypeLabel(transaction.type) : match.first.name;
-      },
-      orElse: () => _fallbackTypeLabel(transaction.type),
-    );
-
-    final String? noteLabel = transaction.note?.trim().isNotEmpty == true
-        ? transaction.note!.trim()
-        : null;
-
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => AddTransactionScreen(existingTransaction: transaction),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-        color: AppColors.surface,
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    categoryLabel,
-                    style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textPrimary),
-                  ),
-                  if (noteLabel != null)
-                    Text(
-                      noteLabel,
-                      style: GoogleFonts.vt323(fontSize: 13, color: AppColors.textMuted),
-                    ),
-                ],
-              ),
-            ),
-            Text(
-              '$sign${CurrencyFormatter.format(transaction.amount)}',
-              style: GoogleFonts.vt323(fontSize: 16, color: amountColor),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _fallbackTypeLabel(String type) {
-    switch (type) {
-      case 'income':
-        return 'pemasukan';
-      case 'expense':
-        return 'pengeluaran';
-      case 'transfer':
-        return 'transfer';
-      default:
-        return type;
-    }
   }
 }
