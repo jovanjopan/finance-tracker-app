@@ -4,17 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../accounts/presentation/account_list_screen.dart';
+import '../../budgets/presentation/budget_list_screen.dart';
 import '../../budgets/presentation/health_point_panel.dart';
+import '../../categories/presentation/category_list_screen.dart';
+import '../../forecasting/presentation/burn_rate_panel.dart';
 import '../../transactions/presentation/add_transaction_screen.dart';
 import '../../transactions/presentation/transaction_list_screen.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
-import '../../accounts/presentation/account_list_screen.dart';
-import '../../categories/presentation/category_list_screen.dart';
-import '../../forecasting/presentation/burn_rate_panel.dart';
-
-
-
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -55,6 +53,16 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 Row(
                   children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const BudgetListScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.pie_chart_outline, color: AppColors.textPrimary),
+                    ),
                     IconButton(
                       onPressed: () {
                         Navigator.of(context).push(
