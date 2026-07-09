@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/utils/date_formatter.dart';
 import '../../dashboard/presentation/dashboard_providers.dart';
 import '../domain/burn_rate_forecast.dart';
 
@@ -34,7 +35,7 @@ class BurnRatePanel extends ConsumerWidget {
       referenceDate: DateTime.now(),
     );
 
-    final statusColor = forecast.willSurvive ? AppColors.positive : AppColors.negative;
+    final statusColor = _colorFor(forecast.status);
 
     return Container(
       width: double.infinity,
@@ -52,32 +53,20 @@ class BurnRatePanel extends ConsumerWidget {
             style: GoogleFonts.pressStart2p(fontSize: 10, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 12),
-          _InfoRow(
-            label: 'kecepatan pengeluaran',
-            value: '${CurrencyFormatter.format(forecast.dailyBurnRate)}/hari',
-            valueColor: AppColors.textPrimary,
+          Text('kecepatan pengeluaran', style: GoogleFonts.vt323(fontSize: 14, color: AppColors.textSecondary)),
+          Text(
+            '${CurrencyFormatter.format(forecast.dailyBurnRate)}/hari',
+            style: GoogleFonts.vt323(fontSize: 17, color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 10),
-          _InfoRow(
-            label: 'proyeksi saldo akhir bulan',
-            value: CurrencyFormatter.format(forecast.projectedEndOfMonthBalance),
-            valueColor: statusColor,
-          ),
-          const SizedBox(height: 10),
-Row(
+          const SizedBox(height: 12),
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                forecast.willSurvive ? Icons.check_circle_outline : Icons.warning_amber_rounded,
-                size: 18,
-                color: statusColor,
-              ),
+              Icon(_iconFor(forecast.status), size: 18, color: statusColor),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  forecast.willSurvive
-                      ? 'aman, saldo diperkirakan cukup sampai akhir bulan'
-                      : 'waspada, saldo diperkirakan tidak cukup sampai akhir bulan',
+                  _messageFor(forecast),
                   style: GoogleFonts.vt323(fontSize: 15, color: statusColor),
                 ),
               ),
@@ -87,27 +76,39 @@ Row(
       ),
     );
   }
-}
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    required this.valueColor,
-  });
+  Color _colorFor(BurnRateStatus status) {
+    switch (status) {
+      case BurnRateStatus.atRisk:
+        return AppColors.negative;
+      case BurnRateStatus.safeThisMonth:
+      case BurnRateStatus.safeLongTerm:
+      case BurnRateStatus.noRecentSpending:
+        return AppColors.positive;
+    }
+  }
 
-  final String label;
-  final String value;
-  final Color valueColor;
+  IconData _iconFor(BurnRateStatus status) {
+    switch (status) {
+      case BurnRateStatus.atRisk:
+        return Icons.warning_amber_rounded;
+      case BurnRateStatus.safeThisMonth:
+      case BurnRateStatus.safeLongTerm:
+      case BurnRateStatus.noRecentSpending:
+        return Icons.check_circle_outline;
+    }
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: GoogleFonts.vt323(fontSize: 14, color: AppColors.textSecondary)),
-        Text(value, style: GoogleFonts.vt323(fontSize: 17, color: valueColor)),
-      ],
-    );
+  String _messageFor(BurnRateForecast forecast) {
+    switch (forecast.status) {
+      case BurnRateStatus.noRecentSpending:
+        return 'belum ada pengeluaran belakangan ini, aman';
+      case BurnRateStatus.safeLongTerm:
+        return 'dengan kecepatan sekarang, saldo aman untuk jangka panjang';
+      case BurnRateStatus.safeThisMonth:
+        return 'dengan kecepatan sekarang, saldo diperkirakan bertahan hingga ${DateFormatter.format(forecast.projectedDepletionDate!)}';
+      case BurnRateStatus.atRisk:
+        return 'waspada, dengan kecepatan sekarang saldo diperkirakan habis pada ${DateFormatter.format(forecast.projectedDepletionDate!)}';
+    }
   }
 }

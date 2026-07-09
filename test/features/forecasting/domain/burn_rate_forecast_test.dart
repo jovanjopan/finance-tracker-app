@@ -4,15 +4,15 @@ import 'package:myfinancetracker/features/transactions/domain/transaction_entity
 
 void main() {
   group('computeBurnRateForecast', () {
-    test('calculates daily burn rate and projects survival when spending is low', () {
-      final referenceDate = DateTime(2026, 7, 10); // hari ke-10 dari 31 hari
+    test('uses month-to-date average when fewer than 7 days have passed', () {
+      final referenceDate = DateTime(2026, 7, 5); // hari ke-5
 
       final transactions = [
         TransactionEntity(
           id: 'tx1',
           type: 'expense',
           amount: 100000,
-          transactionDate: DateTime(2026, 7, 5),
+          transactionDate: DateTime(2026, 7, 2),
           accountId: 'acc-1',
           categoryId: 'cat-food',
         ),
@@ -24,23 +24,64 @@ void main() {
         referenceDate: referenceDate,
       );
 
-      expect(forecast.daysPassed, 10);
-      expect(forecast.dailyBurnRate, 10000); // 100.000 / 10 hari
-      expect(forecast.daysRemainingInMonth, 21); // 31 - 10
-      expect(forecast.projectedRemainingSpend, 210000); // 10.000 * 21
-      expect(forecast.projectedEndOfMonthBalance, 790000); // 1.000.000 - 210.000
-      expect(forecast.willSurvive, isTrue);
+      expect(forecast.daysPassed, 5);
+      expect(forecast.dailyBurnRate, 20000); // 100.000 / 5
     });
 
-    test('projects non-survival when spending rate is too high', () {
-      final referenceDate = DateTime(2026, 7, 10);
+    test('uses 7-day rolling average once 7+ days have passed, ignoring older large expense', () {
+      final referenceDate = DateTime(2026, 7, 20);
+
+      final transactions = [
+        // Pengeluaran besar di awal bulan, sudah lebih dari 7 hari lalu.
+        TransactionEntity(
+          id: 'tx-old',
+          type: 'expense',
+          amount: 2000000,
+          transactionDate: DateTime(2026, 7, 2),
+          accountId: 'acc-1',
+          categoryId: 'cat-food',
+        ),
+        // Pengeluaran dalam 7 hari terakhir (14-20 Juli).
+        TransactionEntity(
+          id: 'tx-recent',
+          type: 'expense',
+          amount: 140000,
+          transactionDate: DateTime(2026, 7, 18),
+          accountId: 'acc-1',
+          categoryId: 'cat-food',
+        ),
+      ];
+
+      final forecast = computeBurnRateForecast(
+        transactions: transactions,
+        currentBalance: 1000000,
+        referenceDate: referenceDate,
+      );
+
+      // Hanya tx-recent yang masuk window 7 hari terakhir: 140.000 / 7 = 20.000
+      expect(forecast.dailyBurnRate, 20000);
+    });
+
+    test('status is noRecentSpending when there is no expense in the relevant window', () {
+      final forecast = computeBurnRateForecast(
+        transactions: const [],
+        currentBalance: 500000,
+        referenceDate: DateTime(2026, 7, 20),
+      );
+
+      expect(forecast.status, BurnRateStatus.noRecentSpending);
+      expect(forecast.projectedDepletionDate, isNull);
+    });
+
+    test('status is atRisk with a concrete date when depletion falls within this month', () {
+      final referenceDate = DateTime(2026, 7, 20);
 
       final transactions = [
         TransactionEntity(
           id: 'tx1',
           type: 'expense',
-          amount: 900000,
-          transactionDate: DateTime(2026, 7, 3),
+          amount: 700000, // 100.000/hari selama 7 hari terakhir
+          transactionDate: DateTime(2026, 7, 18),
           accountId: 'acc-1',
           categoryId: 'cat-food',
         ),
@@ -48,23 +89,23 @@ void main() {
 
       final forecast = computeBurnRateForecast(
         transactions: transactions,
-        currentBalance: 500000,
+        currentBalance: 500000, // 500.000 / 100.000 per hari = 5 hari lagi -> 25 Juli
         referenceDate: referenceDate,
       );
 
-      expect(forecast.dailyBurnRate, 90000); // 900.000 / 10
-      expect(forecast.willSurvive, isFalse);
+      expect(forecast.status, BurnRateStatus.atRisk);
+      expect(forecast.projectedDepletionDate, DateTime(2026, 7, 25));
     });
 
-    test('excludes transactions from other months', () {
-      final referenceDate = DateTime(2026, 7, 15);
+    test('status is safeThisMonth when depletion falls after end of this month', () {
+      final referenceDate = DateTime(2026, 7, 20);
 
       final transactions = [
         TransactionEntity(
-          id: 'tx-old',
+          id: 'tx1',
           type: 'expense',
-          amount: 5000000,
-          transactionDate: DateTime(2026, 6, 20),
+          amount: 70000, // 10.000/hari
+          transactionDate: DateTime(2026, 7, 18),
           accountId: 'acc-1',
           categoryId: 'cat-food',
         ),
@@ -72,23 +113,47 @@ void main() {
 
       final forecast = computeBurnRateForecast(
         transactions: transactions,
-        currentBalance: 1000000,
+        currentBalance: 1000000, // 100 hari lagi, jauh melewati akhir Juli
         referenceDate: referenceDate,
       );
 
-      expect(forecast.dailyBurnRate, 0.0);
-      expect(forecast.projectedEndOfMonthBalance, 1000000);
+      expect(forecast.status, BurnRateStatus.safeThisMonth);
+      expect(forecast.projectedDepletionDate, isNotNull);
+    });
+
+    test('status is safeLongTerm when projected depletion exceeds 180 days', () {
+      final referenceDate = DateTime(2026, 7, 20);
+
+      final transactions = [
+        TransactionEntity(
+          id: 'tx1',
+          type: 'expense',
+          amount: 7000, // 1.000/hari, sangat kecil
+          transactionDate: DateTime(2026, 7, 18),
+          accountId: 'acc-1',
+          categoryId: 'cat-food',
+        ),
+      ];
+
+      final forecast = computeBurnRateForecast(
+        transactions: transactions,
+        currentBalance: 10000000, // 10.000 hari lagi, jauh di atas 180
+        referenceDate: referenceDate,
+      );
+
+      expect(forecast.status, BurnRateStatus.safeLongTerm);
+      expect(forecast.projectedDepletionDate, isNull);
     });
 
     test('excludes income and transfer transactions from burn rate calculation', () {
-      final referenceDate = DateTime(2026, 7, 10);
+      final referenceDate = DateTime(2026, 7, 20);
 
       final transactions = [
         TransactionEntity(
           id: 'tx-income',
           type: 'income',
           amount: 5000000,
-          transactionDate: DateTime(2026, 7, 5),
+          transactionDate: DateTime(2026, 7, 18),
           accountId: 'acc-1',
           categoryId: 'cat-income',
         ),
@@ -96,7 +161,7 @@ void main() {
           id: 'tx-transfer',
           type: 'transfer',
           amount: 200000,
-          transactionDate: DateTime(2026, 7, 6),
+          transactionDate: DateTime(2026, 7, 18),
           accountId: 'acc-1',
           toAccountId: 'acc-2',
         ),
@@ -109,19 +174,31 @@ void main() {
       );
 
       expect(forecast.dailyBurnRate, 0.0);
+      expect(forecast.status, BurnRateStatus.noRecentSpending);
     });
 
-    test('handles first day of month without division by zero', () {
-      final referenceDate = DateTime(2026, 7, 1);
+    test('handles already-negative balance by projecting depletion as today', () {
+      final referenceDate = DateTime(2026, 7, 20);
+
+      final transactions = [
+        TransactionEntity(
+          id: 'tx1',
+          type: 'expense',
+          amount: 70000,
+          transactionDate: DateTime(2026, 7, 18),
+          accountId: 'acc-1',
+          categoryId: 'cat-food',
+        ),
+      ];
 
       final forecast = computeBurnRateForecast(
-        transactions: const [],
-        currentBalance: 500000,
+        transactions: transactions,
+        currentBalance: -50000,
         referenceDate: referenceDate,
       );
 
-      expect(forecast.daysPassed, 1);
-      expect(forecast.dailyBurnRate, 0.0);
+      expect(forecast.status, BurnRateStatus.atRisk);
+      expect(forecast.projectedDepletionDate, DateTime(2026, 7, 20));
     });
   });
 }
