@@ -10,7 +10,7 @@ import '../../budgets/presentation/health_point_panel.dart';
 import '../../categories/presentation/category_list_screen.dart';
 import '../../forecasting/presentation/burn_rate_panel.dart';
 import '../../transactions/presentation/add_transaction_screen.dart';
-import '../../transactions/presentation/transaction_list_screen.dart';
+import '../../transactions/presentation/calendar_history_screen.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
 
@@ -161,7 +161,7 @@ class DashboardScreen extends ConsumerWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (_) => const TransactionListScreen(),
+                        builder: (_) => const CalendarHistoryScreen(),
                       ),
                     );
                   },
