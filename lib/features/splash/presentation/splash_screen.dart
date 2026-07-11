@@ -21,12 +21,13 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   static const Duration _minimumSplashDuration = Duration(milliseconds: 1500);
 
   late final AnimationController _entryController;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
+  late final AnimationController _dotsController;
 
   bool? _hasAccounts;
   bool _initializationStarted = false;
@@ -48,14 +49,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
 
     _entryController.forward();
+    _dotsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
     _startInitialization();
   }
 
-  @override
+@override
   void dispose() {
     _entryController.dispose();
+    _dotsController.dispose();
     super.dispose();
   }
+  
 
   Future<void> _startInitialization() async {
     if (_initializationStarted) {
@@ -131,9 +138,9 @@ builder: (_) => _hasAccounts == true
                 ),
                 const SizedBox(height: 18),
                 AnimatedBuilder(
-                  animation: _entryController,
+                  animation: _dotsController,
                   builder: (context, child) {
-                    final value = _entryController.value;
+                    final value = _dotsController.value;
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(3, (index) {

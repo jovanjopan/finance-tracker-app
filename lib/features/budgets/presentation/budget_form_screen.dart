@@ -10,6 +10,7 @@ import '../../../core/utils/date_formatter.dart';
 import '../../categories/presentation/category_providers.dart';
 import '../domain/budget_entity.dart';
 import '../domain/budget_validator.dart';
+import '../../../core/widgets/pixel_button.dart';
 
 class BudgetFormScreen extends ConsumerStatefulWidget {
   const BudgetFormScreen({super.key, this.existingBudget});
@@ -344,14 +345,8 @@ class _BudgetFormScreenState extends ConsumerState<BudgetFormScreen> {
               const SizedBox(height: 24),
               SizedBox(
                 height: 48,
-                child: ElevatedButton(
+                child: PixelButton(
                   onPressed: _isSubmitting ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accentGamify,
-                    foregroundColor: AppColors.background,
-                    shadowColor: Colors.transparent,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                  ),
                   child: _isSubmitting
                       ? const SizedBox(
                           width: 16,
@@ -362,7 +357,7 @@ class _BudgetFormScreenState extends ConsumerState<BudgetFormScreen> {
                           ),
                         )
                       : Text(
-                          widget.isEditMode ? 'simpan perubahan' : 'simpan',
+                          'simpan',
                           style: GoogleFonts.vt323(fontSize: 22, color: AppColors.background),
                         ),
                 ),

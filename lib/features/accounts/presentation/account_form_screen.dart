@@ -7,6 +7,7 @@ import '../../../core/providers/database_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_input_formatter.dart';
 import '../domain/account_entity.dart';
+import '../../../core/widgets/pixel_button.dart';
 
 class AccountFormScreen extends ConsumerStatefulWidget {
   const AccountFormScreen({super.key, this.existingAccount});
@@ -223,28 +224,22 @@ class _AccountFormScreenState extends ConsumerState<AccountFormScreen> {
                 const SizedBox(height: 24),
                 SizedBox(
                   height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accentGamify,
-                      foregroundColor: AppColors.background,
-                      shadowColor: Colors.transparent,
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                    ),
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.background),
-                            ),
-                          )
-                        : Text(
-                            widget.isEditMode ? 'simpan perubahan' : 'simpan',
-                            style: GoogleFonts.vt323(fontSize: 22, color: AppColors.background),
+                  child: PixelButton(
+                  onPressed: _isSubmitting ? null : _submit,
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.background),
                           ),
-                  ),
+                        )
+                      : Text(
+                          'simpan',
+                          style: GoogleFonts.vt323(fontSize: 22, color: AppColors.background),
+                        ),
+                ),
                 ),
               ],
             ),

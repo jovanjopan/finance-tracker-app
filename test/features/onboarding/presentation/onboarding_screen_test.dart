@@ -31,7 +31,7 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextFormField).at(0), '   ');
-      await tester.tap(find.text('mulai'));
+      await tester.tap(find.text('simpan'));
       await tester.pump();
 
       expect(find.text('nama akun wajib diisi'), findsOneWidget);
@@ -55,7 +55,7 @@ void main() {
 
       await tester.enterText(find.byType(TextFormField).at(0), 'Dompet Tunai');
       await tester.enterText(find.byType(TextFormField).at(1), '');
-      await tester.tap(find.text('mulai'));
+      await tester.tap(find.text('simpan'));
       await tester.pumpAndSettle();
 
       expect(fakeRepository.createdAccounts, hasLength(1));
@@ -81,7 +81,7 @@ void main() {
 
       await tester.enterText(find.byType(TextFormField).at(0), 'Dompet Tunai');
       await tester.enterText(find.byType(TextFormField).at(1), 'abc250000xyz');
-      await tester.tap(find.text('mulai'));
+      await tester.tap(find.text('simpan'));
       await tester.pumpAndSettle();
 
       expect(fakeRepository.createdAccounts, hasLength(1));

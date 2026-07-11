@@ -137,18 +137,19 @@ class _BudgetTile extends StatelessWidget {
           children: [
             Text(categoryName, style: GoogleFonts.vt323(fontSize: 17, color: AppColors.textPrimary)),
             const SizedBox(height: 6),
-            Row(
-              children: List.generate(segmentCount, (index) {
-                final isFilled = index < filledSegments;
-                return Expanded(
-                  child: Container(
-                    height: 12,
-                    margin: const EdgeInsets.only(right: 1),
-                    color: isFilled ? barColor : AppColors.background,
-                  ),
-                );
-              }),
-            ),
+Row(
+          children: List.generate(segmentCount, (index) {
+            final isFilled = index < filledSegments;
+            return Expanded(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 14,
+                margin: const EdgeInsets.only(right: 1),
+                color: isFilled ? barColor : AppColors.background,
+              ),
+            );
+          }),
+        ),
             const SizedBox(height: 4),
             Text(
               'terpakai: ${CurrencyFormatter.format(summary.spent)} / ${CurrencyFormatter.format(summary.budget.targetAmount)}',

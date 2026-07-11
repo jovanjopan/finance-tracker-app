@@ -121,11 +121,12 @@ class _ClassificationBar extends StatelessWidget {
           style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 4),
-        Row(
+Row(
           children: List.generate(segmentCount, (index) {
             final isFilled = index < filledSegments;
             return Expanded(
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
                 height: 14,
                 margin: const EdgeInsets.only(right: 1),
                 color: isFilled ? barColor : AppColors.background,

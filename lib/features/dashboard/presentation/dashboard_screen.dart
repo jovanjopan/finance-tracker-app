@@ -9,6 +9,9 @@ import '../../budgets/presentation/health_point_summary_strip.dart';
 import '../../forecasting/presentation/burn_rate_panel.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
+import '../../../core/widgets/animated_currency_text.dart';
+
+
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -42,9 +45,9 @@ class DashboardScreen extends ConsumerWidget {
                 children: [
                   Text('total saldo', style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textSecondary)),
                   const SizedBox(height: 4),
-                  totalBalanceAsync.when(
-                    data: (value) => Text(
-                      CurrencyFormatter.format(value),
+totalBalanceAsync.when(
+                    data: (value) => AnimatedCurrencyText(
+                      value: value,
                       style: GoogleFonts.pressStart2p(fontSize: 18, color: AppColors.textPrimary),
                     ),
                     loading: () => Text('...', style: GoogleFonts.pressStart2p(fontSize: 18, color: AppColors.textPrimary)),
