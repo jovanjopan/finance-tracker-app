@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../core/providers/navigation_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
-import '../../accounts/presentation/account_list_screen.dart';
-import '../../budgets/presentation/budget_list_screen.dart';
-import '../../budgets/presentation/health_point_panel.dart';
-import '../../categories/presentation/category_list_screen.dart';
+import '../../budgets/presentation/health_point_summary_strip.dart';
 import '../../forecasting/presentation/burn_rate_panel.dart';
-import '../../transactions/presentation/add_transaction_screen.dart';
-import '../../transactions/presentation/calendar_history_screen.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
 
@@ -25,67 +21,13 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.accentGamify,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const AddTransactionScreen(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add, color: AppColors.background),
-      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'koinku',
-                  style: GoogleFonts.pressStart2p(
-                    fontSize: 16,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const BudgetListScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.pie_chart_outline, color: AppColors.textPrimary),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const CategoryListScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.label_outline, color: AppColors.textPrimary),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const AccountListScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.account_balance_wallet_outlined, color: AppColors.textPrimary),
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              'koinku',
+              style: GoogleFonts.pressStart2p(fontSize: 16, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 16),
             Container(
@@ -98,45 +40,24 @@ class DashboardScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'total saldo',
-                    style: GoogleFonts.vt323(
-                      fontSize: 15,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
+                  Text('total saldo', style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textSecondary)),
                   const SizedBox(height: 4),
                   totalBalanceAsync.when(
                     data: (value) => Text(
                       CurrencyFormatter.format(value),
-                      style: GoogleFonts.pressStart2p(
-                        fontSize: 18,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: GoogleFonts.pressStart2p(fontSize: 18, color: AppColors.textPrimary),
                     ),
-                    loading: () => Text(
-                      '...',
-                      style: GoogleFonts.pressStart2p(
-                        fontSize: 18,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+                    loading: () => Text('...', style: GoogleFonts.pressStart2p(fontSize: 18, color: AppColors.textPrimary)),
                     error: (error, stackTrace) => Text(
                       'gagal memuat saldo',
-                      style: GoogleFonts.vt323(
-                        fontSize: 16,
-                        color: AppColors.negative,
-                      ),
+                      style: GoogleFonts.vt323(fontSize: 16, color: AppColors.negative),
                     ),
                   ),
                   const SizedBox(height: 10),
                   accountsAsync.when(
                     data: (accounts) => Text(
                       '${accounts.length} akun',
-                      style: GoogleFonts.vt323(
-                        fontSize: 15,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: GoogleFonts.vt323(fontSize: 15, color: AppColors.textSecondary),
                     ),
                     loading: () => const SizedBox.shrink(),
                     error: (error, stackTrace) => const SizedBox.shrink(),
@@ -145,30 +66,15 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const HealthPointPanel(),
+            const HealthPointSummaryStrip(),
             const BurnRatePanel(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'transaksi terakhir',
-                  style: GoogleFonts.vt323(
-                    fontSize: 18,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
+                Text('transaksi terakhir', style: GoogleFonts.vt323(fontSize: 18, color: AppColors.textPrimary)),
                 InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const CalendarHistoryScreen(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'lihat semua',
-                    style: GoogleFonts.vt323(fontSize: 15, color: AppColors.primary),
-                  ),
+                  onTap: () => ref.read(selectedTabIndexProvider.notifier).state = 1,
+                  child: Text('lihat semua', style: GoogleFonts.vt323(fontSize: 15, color: AppColors.primary)),
                 ),
               ],
             ),
@@ -178,34 +84,21 @@ class DashboardScreen extends ConsumerWidget {
                 if (transactions.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      'belum ada transaksi',
-                      style: GoogleFonts.vt323(
-                        fontSize: 16,
-                        color: AppColors.textMuted,
-                      ),
-                    ),
+                    child: Text('belum ada transaksi', style: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted)),
                   );
                 }
                 final recent = transactions.take(5).toList();
                 return Column(
-                  children: recent
-                      .map((transaction) => TransactionListTile(transaction: transaction))
-                      .toList(),
+                  children: recent.map((t) => TransactionListTile(transaction: t)).toList(),
                 );
               },
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
+                child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
               ),
               error: (error, stackTrace) => Text(
                 'gagal memuat transaksi',
-                style: GoogleFonts.vt323(
-                  fontSize: 16,
-                  color: AppColors.negative,
-                ),
+                style: GoogleFonts.vt323(fontSize: 16, color: AppColors.negative),
               ),
             ),
           ],

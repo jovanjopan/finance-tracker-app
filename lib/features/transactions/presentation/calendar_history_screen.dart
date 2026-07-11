@@ -67,18 +67,9 @@ class _CalendarHistoryScreenState extends ConsumerState<CalendarHistoryScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'riwayat',
-                    style: GoogleFonts.pressStart2p(fontSize: 12, color: AppColors.textPrimary),
-                  ),
-                ],
+child: Text(
+                'riwayat',
+                style: GoogleFonts.pressStart2p(fontSize: 12, color: AppColors.textPrimary),
               ),
             ),
             Expanded(

@@ -10,7 +10,7 @@ import '../../../core/providers/database_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../accounts/domain/account_repository.dart';
 import '../../categories/domain/category_repository.dart';
-import '../../dashboard/presentation/dashboard_screen.dart';
+import '../../navigation/presentation/main_navigation_screen.dart';
 import '../../onboarding/presentation/onboarding_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -81,9 +81,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) => _hasAccounts == true
-            ? const DashboardScreen()
-            : const OnboardingScreen(),
+builder: (_) => _hasAccounts == true
+          ? const MainNavigationScreen()
+          : const OnboardingScreen(),
       ),
     );
   }

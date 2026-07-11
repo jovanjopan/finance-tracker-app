@@ -7,7 +7,7 @@ import '../../../core/providers/database_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_input_formatter.dart';
 import '../../accounts/domain/account_entity.dart';
-import '../../dashboard/presentation/dashboard_screen.dart';
+import '../../navigation/presentation/main_navigation_screen.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -203,7 +203,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-          builder: (_) => const DashboardScreen(),
+          builder: (_) => const MainNavigationScreen(),
         ),
       );
     } catch (_) {
