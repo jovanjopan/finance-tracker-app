@@ -7,6 +7,8 @@ import '../domain/transaction_date_grouping.dart';
 import '../domain/transaction_entity.dart';
 import 'transaction_list_tile.dart';
 import 'transaction_providers.dart';
+import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/pixel_loading_indicator.dart';
 
 const List<String> _monthNames = [
   'januari', 'februari', 'maret', 'april', 'mei', 'juni',
@@ -130,15 +132,10 @@ child: Text(
                         ],
                       ),
                       const SizedBox(height: 14),
-                      if (groups.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          child: Center(
-                            child: Text(
-                              'tidak ada transaksi pada periode ini',
-                              style: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted),
-                            ),
-                          ),
+if (groups.isEmpty)
+                        const EmptyState(
+                          icon: Icons.event_busy_outlined,
+                          message: 'tidak ada transaksi pada periode ini',
                         )
                       else
                         for (final group in groups) ...[
@@ -161,7 +158,7 @@ child: Text(
                     ],
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                loading: () => const Center(child: PixelLoadingIndicator()),
                 error: (error, stackTrace) => Center(
                   child: Text(
                     'gagal memuat riwayat',

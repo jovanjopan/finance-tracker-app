@@ -8,6 +8,9 @@ import '../domain/account_entity.dart';
 import 'account_form_screen.dart';
 import 'account_providers.dart';
 import '../../../core/providers/database_providers.dart';
+import '../../../core/widgets/pixel_page_route.dart';
+import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/pixel_loading_indicator.dart';
 
 class AccountListScreen extends ConsumerWidget {
   const AccountListScreen({super.key});
@@ -23,7 +26,7 @@ class AccountListScreen extends ConsumerWidget {
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute<void>(
+           PixelPageRoute<void>(
               builder: (_) => const AccountFormScreen(),
             ),
           );
@@ -53,12 +56,10 @@ class AccountListScreen extends ConsumerWidget {
             Expanded(
               child: accountsAsync.when(
                 data: (accounts) {
-                  if (accounts.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'belum ada akun',
-                        style: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted),
-                      ),
+if (accounts.isEmpty) {
+                    return const EmptyState(
+                      icon: Icons.account_balance_wallet_outlined,
+                      message: 'belum ada akun',
                     );
                   }
                   return ListView.builder(
@@ -69,9 +70,7 @@ class AccountListScreen extends ConsumerWidget {
                     },
                   );
                 },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
+loading: () => const Center(child: PixelLoadingIndicator()),
                 error: (error, stackTrace) => Center(
                   child: Text(
                     'gagal memuat akun',
@@ -99,7 +98,7 @@ class _AccountTile extends ConsumerWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute<void>(
+          PixelPageRoute<void>(
             builder: (_) => AccountFormScreen(existingAccount: account),
           ),
         );

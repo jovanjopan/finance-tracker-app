@@ -7,6 +7,7 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../categories/presentation/category_providers.dart';
 import '../domain/transaction_entity.dart';
 import 'add_transaction_screen.dart';
+import '../../../core/widgets/pixel_page_route.dart';
 
 class TransactionListTile extends ConsumerWidget {
   const TransactionListTile({super.key, required this.transaction});
@@ -46,7 +47,7 @@ class TransactionListTile extends ConsumerWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute<void>(
+          PixelPageRoute<void>(
             builder: (_) => AddTransactionScreen(existingTransaction: transaction),
           ),
         );

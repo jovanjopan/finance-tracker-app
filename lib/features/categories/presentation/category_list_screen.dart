@@ -6,6 +6,10 @@ import '../../../core/theme/app_colors.dart';
 import '../domain/category_entity.dart';
 import 'category_form_screen.dart';
 import 'category_providers.dart';
+import '../../../core/widgets/pixel_page_route.dart';
+import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/pixel_loading_indicator.dart';
+
 
 class CategoryListScreen extends ConsumerWidget {
   const CategoryListScreen({super.key});
@@ -21,7 +25,7 @@ class CategoryListScreen extends ConsumerWidget {
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute<void>(
+            PixelPageRoute<void>(
               builder: (_) => const CategoryFormScreen(),
             ),
           );
@@ -51,15 +55,12 @@ class CategoryListScreen extends ConsumerWidget {
             Expanded(
               child: categoriesAsync.when(
                 data: (categories) {
-                  if (categories.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'belum ada kategori',
-                        style: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted),
-                      ),
+if (categories.isEmpty) {
+                    return const EmptyState(
+                      icon: Icons.label_outline,
+                      message: 'belum ada kategori',
                     );
                   }
-
                   final incomeCategories = categories.where((c) => c.transactionType == 'income').toList();
                   final expenseCategories = categories.where((c) => c.transactionType == 'expense').toList();
 
@@ -78,9 +79,7 @@ class CategoryListScreen extends ConsumerWidget {
                     ],
                   );
                 },
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
+loading: () => const Center(child: PixelLoadingIndicator()),
                 error: (error, stackTrace) => Center(
                   child: Text(
                     'gagal memuat kategori',
@@ -134,7 +133,7 @@ class _CategoryTile extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute<void>(
+          PixelPageRoute<void>(
             builder: (_) => CategoryFormScreen(existingCategory: category),
           ),
         );

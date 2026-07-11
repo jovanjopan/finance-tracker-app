@@ -10,6 +10,9 @@ import '../domain/category_budget_summary.dart';
 import 'budget_form_screen.dart';
 import 'budget_providers.dart';
 import 'health_point_panel.dart';
+import '../../../core/widgets/pixel_page_route.dart';
+import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/pixel_loading_indicator.dart';
 
 class AnggaranTabScreen extends ConsumerWidget {
   const AnggaranTabScreen({super.key});
@@ -36,7 +39,7 @@ class AnggaranTabScreen extends ConsumerWidget {
                 InkWell(
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => const BudgetFormScreen()),
+                      PixelPageRoute<void>(builder: (_) => const BudgetFormScreen()),
                     );
                   },
                   child: Row(
@@ -61,13 +64,10 @@ class AnggaranTabScreen extends ConsumerWidget {
                           transactions: transactions,
                         );
 
-                        if (summaries.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Text(
-                              'belum ada budget kategori.\ntekan tambah untuk membuat.',
-                              style: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted),
-                            ),
+if (summaries.isEmpty) {
+                          return const EmptyState(
+                            icon: Icons.pie_chart_outline,
+                            message: 'belum ada budget kategori.\ntekan tambah untuk membuat.',
                           );
                         }
 
@@ -81,15 +81,15 @@ class AnggaranTabScreen extends ConsumerWidget {
                           }).toList(),
                         );
                       },
-                      loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+loading: () => const Center(child: PixelLoadingIndicator()),
                       error: (error, stackTrace) => const SizedBox.shrink(),
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+loading: () => const Center(child: PixelLoadingIndicator()),
                   error: (error, stackTrace) => const SizedBox.shrink(),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+loading: () => const Center(child: PixelLoadingIndicator()),
               error: (error, stackTrace) => Text(
                 'gagal memuat budget',
                 style: GoogleFonts.vt323(fontSize: 16, color: AppColors.negative),
@@ -125,7 +125,7 @@ class _BudgetTile extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => BudgetFormScreen(existingBudget: summary.budget)),
+          PixelPageRoute<void>(builder: (_) => BudgetFormScreen(existingBudget: summary.budget)),
         );
       },
       child: Container(

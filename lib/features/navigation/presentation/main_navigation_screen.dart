@@ -10,6 +10,7 @@ import '../../settings/presentation/lainnya_tab_screen.dart';
 import '../../transactions/presentation/add_transaction_screen.dart';
 import '../../transactions/presentation/calendar_history_screen.dart';
 import 'pixel_bottom_nav.dart';
+import '../../../core/widgets/pixel_page_route.dart';
 
 class MainNavigationScreen extends ConsumerWidget {
   const MainNavigationScreen({super.key});
@@ -39,7 +40,7 @@ class MainNavigationScreen extends ConsumerWidget {
         icon: Icons.add,
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const AddTransactionScreen()),
+            PixelPageRoute<void>(builder: (_) => const AddTransactionScreen()),
           );
         },
       ),

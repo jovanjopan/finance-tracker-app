@@ -10,6 +10,8 @@ import '../../forecasting/presentation/burn_rate_panel.dart';
 import '../../transactions/presentation/transaction_list_tile.dart';
 import 'dashboard_providers.dart';
 import '../../../core/widgets/animated_currency_text.dart';
+import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/pixel_loading_indicator.dart';
 
 
 
@@ -84,10 +86,10 @@ totalBalanceAsync.when(
             const SizedBox(height: 8),
             transactionsAsync.when(
               data: (transactions) {
-                if (transactions.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text('belum ada transaksi', style: GoogleFonts.vt323(fontSize: 16, color: AppColors.textMuted)),
+if (transactions.isEmpty) {
+                  return const EmptyState(
+                    icon: Icons.receipt_long_outlined,
+                    message: 'belum ada transaksi',
                   );
                 }
                 final recent = transactions.take(5).toList();
@@ -95,9 +97,9 @@ totalBalanceAsync.when(
                   children: recent.map((t) => TransactionListTile(transaction: t)).toList(),
                 );
               },
-              loading: () => const Padding(
+loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                child: Center(child: PixelLoadingIndicator()),
               ),
               error: (error, stackTrace) => Text(
                 'gagal memuat transaksi',

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import '../accounts/presentation/account_list_screen.dart';
 import '../categories/presentation/category_list_screen.dart';
+import '../../../core/widgets/pixel_page_route.dart';
 
 class LainnyaTabScreen extends StatelessWidget {
   const LainnyaTabScreen({super.key});
@@ -25,7 +26,7 @@ class LainnyaTabScreen extends StatelessWidget {
                 label: 'kelola akun',
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const AccountListScreen()),
+                    PixelPageRoute<void>(builder: (_) => const AccountListScreen()),
                   );
                 },
               ),
@@ -34,7 +35,7 @@ class LainnyaTabScreen extends StatelessWidget {
                 label: 'kelola kategori',
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const CategoryListScreen()),
+                    PixelPageRoute<void>(builder: (_) => const CategoryListScreen()),
                   );
                 },
               ),
