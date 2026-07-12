@@ -31,7 +31,7 @@ class DashboardScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'koinku',
+              'MyDuit',
               style: GoogleFonts.pressStart2p(fontSize: 16, color: AppColors.textPrimary),
             ),
             const SizedBox(height: 16),

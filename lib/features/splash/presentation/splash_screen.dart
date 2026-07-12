@@ -130,7 +130,7 @@ builder: (_) => _hasAccounts == true
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'koinku',
+                  'MyDuit',
                   style: GoogleFonts.pressStart2p(
                     fontSize: 20,
                     color: AppColors.textPrimary,
