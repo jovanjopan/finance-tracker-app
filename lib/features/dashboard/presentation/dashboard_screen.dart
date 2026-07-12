@@ -78,7 +78,7 @@ totalBalanceAsync.when(
               children: [
                 Text('transaksi terakhir', style: GoogleFonts.vt323(fontSize: 18, color: AppColors.textPrimary)),
                 InkWell(
-                  onTap: () => ref.read(selectedTabIndexProvider.notifier).state = 1,
+                  onTap: () => ref.read(selectedTabIndexProvider.notifier).changeIndex(1),
                   child: Text('lihat semua', style: GoogleFonts.vt323(fontSize: 15, color: AppColors.primary)),
                 ),
               ],

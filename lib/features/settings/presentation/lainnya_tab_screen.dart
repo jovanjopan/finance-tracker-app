@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../accounts/presentation/account_list_screen.dart';
 import '../../categories/presentation/category_list_screen.dart';
+import 'data_management_screen.dart';
+import '../../../core/widgets/pixel_page_route.dart';
 
 class LainnyaTabScreen extends StatelessWidget {
   const LainnyaTabScreen({super.key});
@@ -35,6 +37,15 @@ class LainnyaTabScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(builder: (_) => const CategoryListScreen()),
+                  );
+                },
+              ),
+              _MenuTile(
+                icon: Icons.sd_storage_outlined,
+                label: 'kelola data (backup/restore/reset)',
+                onTap: () {
+                  Navigator.of(context).push(
+                    PixelPageRoute(builder: (_) => const DataManagementScreen()),
                   );
                 },
               ),

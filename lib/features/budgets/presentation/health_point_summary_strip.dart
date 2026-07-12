@@ -42,7 +42,7 @@ class HealthPointSummaryStrip extends ConsumerWidget {
     );
 
     return InkWell(
-      onTap: () => ref.read(selectedTabIndexProvider.notifier).state = 2,
+      onTap: () => ref.read(selectedTabIndexProvider.notifier).changeIndex(2),
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 20),

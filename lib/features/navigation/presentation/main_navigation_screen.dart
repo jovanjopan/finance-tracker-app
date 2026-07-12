@@ -47,7 +47,7 @@ class MainNavigationScreen extends ConsumerWidget {
       bottomNavigationBar: PixelBottomNav(
         items: _navItems,
         currentIndex: selectedIndex,
-        onTap: (index) => ref.read(selectedTabIndexProvider.notifier).state = index,
+        onTap: (index) => ref.read(selectedTabIndexProvider.notifier).changeIndex(index),
       ),
     );
   }
